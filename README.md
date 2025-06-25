@@ -18,7 +18,7 @@
 - **加粗文本** 和 *斜体文本*
 - `内联代码`
 - [链接](https://example.com)
-- ![图片](https://example.com/image.jpg)
+- `![图片](https://example.com/image.jpg)`
 - 无序列表和有序列表
 - > 引用块
 - 分割线 (---)
@@ -39,7 +39,7 @@
 ### 1. 克隆或下载代码
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/geekjourneyx/md2wechat-mcp-server
 cd md2wechat-mcp-server
 ```
 
