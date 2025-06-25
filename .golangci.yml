@@ -1,0 +1,228 @@
+# golangci-lint 配置文件
+# 微信 Markdown 编辑器 MCP 服务器
+
+run:
+  # 超时时间
+  timeout: 5m
+  
+  # 测试文件中允许使用的包名模式
+  tests: true
+  
+  # 跳过自动生成的文件
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+  
+  # 要分析的Go模块目录
+  modules-download-mode: readonly
+
+# 所有可用的设置选项：
+# https://github.com/golangci/golangci-lint/blob/master/.golangci.reference.yml
+linters-settings:
+  # 错误检查器
+  errcheck:
+    # 报告赋值给空白标识符的类型断言: `num, _ := strconv.Atoi(numStr)`;
+    check-type-assertions: true
+    # 报告赋值给空白标识符的错误: `num, _ := strconv.Atoi(numStr)`;
+    check-blank: false
+    # 忽略的函数列表（格式：package.function）
+    ignore: fmt:.*,io/ioutil:^Read.*
+
+  # 函数圈复杂度
+  gocyclo:
+    # 最大圈复杂度
+    min-complexity: 15
+
+  # 函数长度
+  funlen:
+    # 最大行数
+    lines: 100
+    # 最大语句数
+    statements: 50
+
+  # 嵌套深度
+  nestif:
+    # 最小嵌套深度触发警告
+    min-complexity: 5
+
+  # 认知复杂度
+  gocognit:
+    # 最小认知复杂度触发警告
+    min-complexity: 20
+
+  # 命名规范
+  govet:
+    # 报告遮蔽变量
+    check-shadowing: true
+    settings:
+      printf:
+        # Printf 函数名称
+        funcs:
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+
+  # 变量命名
+  revive:
+    rules:
+      # 启用所有规则
+      - name: exported
+        arguments: [checkPrivateReceivers, sayRepetitiveInsteadOfStutters]
+
+  # 代码质量
+  gocritic:
+    # 启用检查
+    enabled-checks:
+      - argOrder
+      - badCond
+      - caseOrder
+      - dupArg
+      - dupBranch
+      - dupCase
+      - flagDeref
+      - regexpMust
+      - singleCaseSwitch
+      - typeSwitchVar
+      - underef
+      - unlambda
+      - unslice
+
+  # 未使用的代码
+  unused:
+    # 检查导出的函数和变量
+    check-exported: true
+
+  # 行长度
+  lll:
+    # 最大行长度
+    line-length: 120
+
+  # import 排序
+  goimports:
+    # 本地包前缀
+    local-prefixes: github.com/your-username/md2wechat-mcp-server
+
+  # 无用的赋值
+  ineffassign:
+    # 检查所有赋值，包括没有使用的
+    check-generated: false
+
+  # 格式化
+  gofmt:
+    # 简化代码
+    simplify: true
+
+  # 常量大小写
+  gomnd:
+    settings:
+      mnd:
+        # 不检查的函数列表
+        ignored-functions: strconv.FormatInt,strconv.ParseInt,strconv.Atoi,time.Duration
+        # 不检查的数字
+        ignored-numbers: 2,8,10,16,32,64,100,200,404,500,1000,1024
+
+# 启用的检查器列表
+linters:
+  enable:
+    # 默认启用的检查器
+    - errcheck    # 检查错误处理
+    - gosimple    # 简化代码建议
+    - govet       # Go内置检查
+    - ineffassign # 检查无效赋值
+    - staticcheck # 静态分析
+    - typecheck   # 类型检查
+    - unused      # 未使用的代码
+    
+    # 额外启用的检查器
+    - bodyclose     # HTTP响应体关闭检查
+    - dupl          # 重复代码检查
+    - errname       # 错误命名检查
+    - exportloopref # 循环变量捕获检查
+    - funlen        # 函数长度检查
+    - gochecknoinits # 禁止 init 函数
+    - goconst       # 重复字符串常量检查
+    - gocritic      # 代码质量检查
+    - gocyclo       # 圈复杂度检查
+    - gofmt         # 格式检查
+    - goimports     # import 排序检查
+    - gomnd         # 魔术数字检查
+    - goprintffuncname # Printf 函数名检查
+    - gosec         # 安全检查
+    - lll           # 行长度检查
+    - misspell      # 拼写检查
+    - nestif        # 嵌套深度检查
+    - prealloc      # 切片预分配检查
+    - revive        # 快速、可配置、可扩展的检查器
+    - rowserrcheck  # SQL 行错误检查
+    - sqlclosecheck # SQL 语句关闭检查
+    - unconvert     # 不必要的类型转换
+    - unparam       # 未使用的参数
+    - whitespace    # 空白字符检查
+
+  # 禁用的检查器
+  disable:
+    - deadcode      # 已弃用，使用 unused 替代
+    - varcheck      # 已弃用，使用 unused 替代
+    - structcheck   # 已弃用，使用 unused 替代
+    - interfacer    # 已弃用
+    - maligned      # 已弃用
+    - scopelint     # 已弃用，使用 exportloopref 替代
+
+# 问题配置
+issues:
+  # 排除文件模式
+  exclude-rules:
+    # 测试文件中忽略某些检查
+    - path: _test\.go
+      linters:
+        - gomnd
+        - funlen
+        - gocyclo
+        - dupl
+    
+    # main 函数中忽略某些检查
+    - path: main\.go
+      linters:
+        - gochecknoinits
+    
+    # 自动生成的文件
+    - path: \.pb\.go$
+      linters:
+        - all
+    
+    # 忽略特定的错误消息
+    - text: "G404: Use of weak random number generator"
+      linters:
+        - gosec
+    
+    # 忽略 context.TODO() 的使用
+    - text: "context\\.TODO"
+      linters:
+        - gocritic
+
+  # 不计算的最大问题数，0 表示无限制
+  max-issues-per-linter: 0
+  
+  # 不计算的最大同一问题数，0 表示无限制
+  max-same-issues: 0
+  
+  # 显示只在新代码中的问题
+  new: false
+  
+  # 修复问题（如果linter支持）
+  fix: false
+
+# 输出配置
+output:
+  # 输出格式：line-number,json,tab,checkstyle,code-climate,html,junit-xml,github-actions
+  format: colored-line-number
+  
+  # 打印检查器名称
+  print-issued-lines: true
+  
+  # 打印检查器名称
+  print-linter-name: true
+  
+  # 显示统计信息
+  sort-results: true
